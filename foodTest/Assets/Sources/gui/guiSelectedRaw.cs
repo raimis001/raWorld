@@ -7,13 +7,14 @@ public class guiSelectedRaw : MonoBehaviour {
 	public Text CaptionText;
 	public Text DescriptionText;
 	public Text TypeText;
-	public Text PrepareTimeText;
+	public Image Icon;
 
-	public guiBinaryProgress[] ProgressBars;
+	public guiParamsPanel FoodParams;
 
 	public Inventory CurrentInventory;
 	
 	int _selectedTab = 0;
+
 	ItemFood _selectedItem = null;
 	public int SelectedItem {
 		get { return _selectedItem.item_id; }
@@ -22,6 +23,7 @@ public class guiSelectedRaw : MonoBehaviour {
 
 			if (CaptionText) CaptionText.text = _selectedItem.name;
 			if (DescriptionText) DescriptionText.text = _selectedItem.description;
+			if (Icon) Icon.sprite = _selectedItem.Image;
 
 			OnTabChange(_selectedTab);
 		}
@@ -29,45 +31,44 @@ public class guiSelectedRaw : MonoBehaviour {
 
 	public FoodClass Food {
 		set {
-			ProgressBars[0].Value = (float)value.Calorie / 100f;
-			ProgressBars[1].Value = (float)value.Health / 100f;
-			ProgressBars[2].Value = (float)value.Sweet / 100f;
-			ProgressBars[3].Value = (float)value.Salt / 100f;
-			ProgressBars[4].Value = (float)value.Sour / 100f;
-			ProgressBars[5].Value = (float)value.Bitter / 100f;
-
-			PrepareTimeText.text = value.Time.ToString("0") + "s";
+			if (FoodParams) FoodParams.Food = value;
 		}
 	}
 
 	// Use this for initialization
 	void Start () {
 		if (TypeText) TypeText.text = "Raw data";
-	}
-	void OnEnable() {
 		guiTabList.OnTabClick += OnTabChange;
 	}
+	void OnEnable() {
+		//Debug.Log("Enable tabs");
+	}
 	void OnDisable() {
-		guiTabList.OnTabClick -= OnTabChange;
+		//Debug.Log("Disable tabs");
+		//guiTabList.OnTabClick -= OnTabChange;
 	}
 
 
 	void OnTabChange(int tab) {
-		_selectedTab = 0;
+		_selectedTab = tab;
+
 		switch (tab) {
 			case 0:
 				if (TypeText) TypeText.text = "Raw data";
-				Food = _selectedItem.Raw;
+				if (_selectedItem != null) Food = _selectedItem.Raw;
 				break;
 			case 1:
 				if (TypeText) TypeText.text = "Boil data";
-				Food = _selectedItem.Boil;
+				if (_selectedItem != null) Food = _selectedItem.Boil;
 				break;
 			case 2:
 				if (TypeText) TypeText.text = "Bake data";
-				Food = _selectedItem.Bake;
+				if (_selectedItem != null) Food = _selectedItem.Bake;
 				break;
 		}
+
+		if (!gameObject.activeSelf) return;
+		if (CurrentInventory) CurrentInventory.Recalc(tab);
 	}
 
 	// Update is called once per frame
@@ -77,7 +78,7 @@ public class guiSelectedRaw : MonoBehaviour {
 
 	public void AddToInventory() {
 		if (!CurrentInventory) return;
-		CurrentInventory.Add(_selectedItem, 1);
+		CurrentInventory.Add(_selectedItem, 1, _selectedTab);
 
 	}
 }

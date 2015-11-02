@@ -22,14 +22,19 @@ public class guiBinaryProgress : MonoBehaviour {
 				NegativeSlider.value = Mathf.Abs(_value); 
 			}
 
-			float v = _value + 0.15f;
-			Color c = NegativeSlider.fillRect.gameObject.GetComponent<Image>().color;
-			if (v >= 0 && v < 0.3f) {
-				c.a =1 - (v  / 0.3f);
+			Color cN = NegativeSlider.fillRect.gameObject.GetComponent<Image>().color;
+			Color cP = PositiveSlider.fillRect.gameObject.GetComponent<Image>().color;
+
+			if (_value < 0) {
+				cN.a =_value > -0.2f ? _value / 0.2f : 1;
+				cP.a = 0;
 			} else {
-				c.a = _value < 0 ? 1f : 0;
+				cP.a = _value > 0.1f && _value < 0.2f ? _value / 0.2f : 1;
+				cN.a = 0;
 			}
-			NegativeSlider.fillRect.gameObject.GetComponent<Image>().color = c;
+
+			NegativeSlider.fillRect.gameObject.GetComponent<Image>().color = cN;
+			PositiveSlider.fillRect.gameObject.GetComponent<Image>().color = cP;
 			
 		}
 	}

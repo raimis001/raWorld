@@ -26,13 +26,25 @@ public class ItemClass {
 
 public class FoodClass {
 	public int id = -1;
-	public int Calorie = 0;
-	public int Health = 0;
-	public int Sweet = 0;
-	public int Sour = 0;
-	public int Salt = 0;
-	public int Bitter = 0;
+	public float Calorie = 0;
+	public float Health = 0;
+	public float Sweet = 0;
+	public float Sour = 0;
+	public float Salt = 0;
+	public float Spice = 0;
+	public float Bitter = 0;
 	public float Time = 0;
+
+	public override string ToString() {
+		return "Food" +
+			" Calorie:" + Calorie.ToString("0") +
+			" Sweet:" + Sweet.ToString("0") +
+			" Salt:" + Salt.ToString("0") +
+			" Sour:" + Sour.ToString("0") +
+			" Spice:" + Spice.ToString("0") +
+			" Bitter:" + Bitter.ToString("0");
+	}
+
 }
 
 public class ItemFood : ItemClass {
@@ -53,30 +65,43 @@ public class FoodCollection : FoodClass {
 
 	List<FoodClass> Collection = new List<FoodClass>();
 
-	public float Taste {
+	public int Taste {
 		get {
 			float temp = 0;
 
-			float tBitter = Mathf.Abs(1 - Bitter / 50f);
-			tBitter = Bitter > 50 ? 22f - tBitter * 22f : tBitter * 80f + 20;
-			if (tBitter > 20) return tBitter;
+			float[] tastes = new float[5];
 
-			float tSweet = Mathf.Abs(Sweet);
-			float tSalt = Mathf.Abs(Salt);
-			float tSour = Mathf.Abs(Sour);
+			tastes[0] = Mathf.Abs(Sweet);
+			tastes[1] = Mathf.Abs(Salt);
+			tastes[2] = Mathf.Abs(Sour);
+			tastes[3] = Mathf.Abs(Spice);
+			tastes[4] = Mathf.Abs(Bitter);
 
-			if (Sweet < temp) temp = Sweet;
-			if (Salt < temp) temp = Salt;
-			if (Sour < temp) temp = Sour;
+			float modif = 0;
+			List<int> unique = new List<int>();
 
-			if (Bitter < temp) temp = Bitter;
+			foreach (FoodClass food in Collection) {
+				if (!unique.Contains(food.id)) {
+					modif ++;
+					unique.Add(food.id);
+				}
+			}
 
-			return 0;
+			modif = modif < 7 ? modif / 7f : 7f / modif;
+
+			temp = 9 * (Mathf.Max(tastes) - modif);
+
+			//Debug.Log(temp);
+			//Debug.Log(modif);
+			
+			return Mathf.Clamp((int)temp, 0, 9 );
 		}
 	}
 
-	public void Add(FoodClass collection) {
-		Collection.Add(collection);
+	public void Add(FoodClass collection, int amount = 1) {
+		for (int i = 0; i < amount; i++)
+			Collection.Add(collection);
+
 		Recalc();
 	}
 
@@ -91,6 +116,10 @@ public class FoodCollection : FoodClass {
 
 		Recalc();
 	}
+	public void Clear() {
+		Collection.Clear();
+		Recalc();
+	}
 
 	public void Recalc() {
 		Calorie = 0;
@@ -99,20 +128,42 @@ public class FoodCollection : FoodClass {
 		Sour = 0;
 		Salt = 0;
 		Bitter = 0;
+		Spice = 0;
 		Time = 0;
 
+		float pBitter = 0;
+		float nBitter = 0;
 		foreach (FoodClass food in Collection) {
 			Calorie += food.Calorie;
 			Sweet += food.Sweet;
 			Salt += food.Salt;
 			Sour += food.Sour;
-			Bitter += food.Bitter;
+			Spice += food.Spice;
+
+			if (food.Bitter > 0 && food.Bitter > pBitter) pBitter = food.Bitter;
+			if (food.Bitter < 0 ) nBitter += food.Bitter;
 
 			if (food.Health < Health) Health = food.Health;
 			if (food.Time > Time) Time = food.Time;
 
 		}
 
+		Bitter = (int)(pBitter + nBitter);
+
+		if (Health >= 900) Health = 0;
+
+		Calorie = Mathf.Clamp(Calorie, -100, 100);
+		Sweet = Mathf.Clamp(Sweet, -1, 1);
+		Salt = Mathf.Clamp(Salt, -1, 1);
+		Sour = Mathf.Clamp(Sour, -1, 1);
+		Spice = Mathf.Clamp(Spice, -1, 1);
+		Bitter = Mathf.Clamp(Bitter, -1, 1);
+
+
+		//Debug.Log(this.ToString());
+	}
+	public int Count() {
+		return Collection.Count;
 	}
 
 }

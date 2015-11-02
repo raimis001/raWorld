@@ -23,10 +23,10 @@ public class guiScroll : MonoBehaviour {
 	List<GameObject> _itemsList = new List<GameObject>();
 
 	void Awake() {
-		Debug.Log(Content.sizeDelta);
+		//Debug.Log(Content.sizeDelta);
 		ContentLength = Step;
 		Content.sizeDelta = (Direction == ScrollDirection.HORIZONTAL ? new Vector2(ContentLength, Content.sizeDelta.y) : new Vector2( Content.sizeDelta.x, ContentLength));
-		Debug.Log(Content.sizeDelta);
+		//Debug.Log(Content.sizeDelta);
 
 	}
 
@@ -59,7 +59,7 @@ public class guiScroll : MonoBehaviour {
 
 		ContentLength = (Direction == ScrollDirection.HORIZONTAL ? Content.rect.width : Content.rect.height) + Step;
 
-		Debug.Log(Content.sizeDelta);
+		//Debug.Log(Content.sizeDelta);
 
 		Content.sizeDelta = (Direction == ScrollDirection.HORIZONTAL ? new Vector2(ContentLength, Content.sizeDelta.y) : new Vector2(Content.sizeDelta.x, ContentLength));
 

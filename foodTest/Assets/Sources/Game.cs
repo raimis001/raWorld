@@ -54,8 +54,8 @@ public class Game : MonoBehaviour {
 	}
 
 
-	void OnPanelClick(int itemID) {
-		Debug.Log("Click on icon ID:" + itemID.ToString());
+	void OnPanelClick(int itemID, int index) {
+		//Debug.Log("Click on icon ID:" + itemID.ToString());
 
 		Selected.SelectedItem = itemID;
 		Selected.gameObject.SetActive(true);
